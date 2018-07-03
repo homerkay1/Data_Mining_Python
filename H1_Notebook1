@@ -1,0 +1,1859 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Hmwk 1 Notebook 2 - Homer Kay"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Add packages\n",
+    "%matplotlib inline \n",
+    "import numpy as np\n",
+    "import matplotlib.pyplot as plt\n",
+    "import pandas as pd\n",
+    "#From Scikit Learn\n",
+    "from sklearn import preprocessing\n",
+    "from sklearn.model_selection  import train_test_split, cross_val_score, KFold\n",
+    "from sklearn.model_selection import GridSearchCV\n",
+    "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score\n",
+    "from sklearn.metrics import roc_curve, auc, confusion_matrix, classification_report"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'/Users/homerkay/Desktop/6303 Predictive Models/HMWK 1/Notebooks'"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    " # Checking Current Directory\n",
+    "%pwd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/Users/homerkay/Desktop/Pred_Models_git-master/Week 2\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Change Directory\n",
+    "%cd /Users/homerkay/Desktop/Pred_Models_git-master/Week 2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part A\n",
+    "Reading in Churn Calls Dataset"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>state</th>\n",
+       "      <th>account_length</th>\n",
+       "      <th>area_code</th>\n",
+       "      <th>international_plan</th>\n",
+       "      <th>voice_mail_plan</th>\n",
+       "      <th>number_vmail_messages</th>\n",
+       "      <th>total_day_minutes</th>\n",
+       "      <th>total_day_calls</th>\n",
+       "      <th>total_day_charge</th>\n",
+       "      <th>total_eve_minutes</th>\n",
+       "      <th>total_eve_calls</th>\n",
+       "      <th>total_eve_charge</th>\n",
+       "      <th>total_night_minutes</th>\n",
+       "      <th>total_night_calls</th>\n",
+       "      <th>total_night_charge</th>\n",
+       "      <th>total_intl_minutes</th>\n",
+       "      <th>total_intl_calls</th>\n",
+       "      <th>total_intl_charge</th>\n",
+       "      <th>number_customer_service_calls</th>\n",
+       "      <th>churn</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>1</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>175.2</td>\n",
+       "      <td>74</td>\n",
+       "      <td>29.78</td>\n",
+       "      <td>151.7</td>\n",
+       "      <td>79</td>\n",
+       "      <td>12.89</td>\n",
+       "      <td>230.5</td>\n",
+       "      <td>109</td>\n",
+       "      <td>10.37</td>\n",
+       "      <td>5.3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>1.43</td>\n",
+       "      <td>1</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>36</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>30</td>\n",
+       "      <td>146.3</td>\n",
+       "      <td>128</td>\n",
+       "      <td>24.87</td>\n",
+       "      <td>162.5</td>\n",
+       "      <td>80</td>\n",
+       "      <td>13.81</td>\n",
+       "      <td>129.3</td>\n",
+       "      <td>109</td>\n",
+       "      <td>5.82</td>\n",
+       "      <td>14.5</td>\n",
+       "      <td>6</td>\n",
+       "      <td>3.92</td>\n",
+       "      <td>0</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>36</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>19</td>\n",
+       "      <td>171.9</td>\n",
+       "      <td>96</td>\n",
+       "      <td>29.22</td>\n",
+       "      <td>198.4</td>\n",
+       "      <td>111</td>\n",
+       "      <td>16.86</td>\n",
+       "      <td>321.7</td>\n",
+       "      <td>76</td>\n",
+       "      <td>14.48</td>\n",
+       "      <td>10.5</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2.84</td>\n",
+       "      <td>1</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>41</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>159.3</td>\n",
+       "      <td>66</td>\n",
+       "      <td>27.08</td>\n",
+       "      <td>125.9</td>\n",
+       "      <td>75</td>\n",
+       "      <td>10.70</td>\n",
+       "      <td>261.9</td>\n",
+       "      <td>76</td>\n",
+       "      <td>11.79</td>\n",
+       "      <td>11.1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>3.00</td>\n",
+       "      <td>1</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>42</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>171.0</td>\n",
+       "      <td>129</td>\n",
+       "      <td>29.07</td>\n",
+       "      <td>183.9</td>\n",
+       "      <td>96</td>\n",
+       "      <td>15.63</td>\n",
+       "      <td>130.2</td>\n",
+       "      <td>90</td>\n",
+       "      <td>5.86</td>\n",
+       "      <td>4.6</td>\n",
+       "      <td>6</td>\n",
+       "      <td>1.24</td>\n",
+       "      <td>0</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>48</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>37</td>\n",
+       "      <td>211.7</td>\n",
+       "      <td>115</td>\n",
+       "      <td>35.99</td>\n",
+       "      <td>159.9</td>\n",
+       "      <td>84</td>\n",
+       "      <td>13.59</td>\n",
+       "      <td>144.1</td>\n",
+       "      <td>80</td>\n",
+       "      <td>6.48</td>\n",
+       "      <td>12.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3.29</td>\n",
+       "      <td>1</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>50</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>183.6</td>\n",
+       "      <td>107</td>\n",
+       "      <td>31.21</td>\n",
+       "      <td>58.6</td>\n",
+       "      <td>118</td>\n",
+       "      <td>4.98</td>\n",
+       "      <td>202.6</td>\n",
+       "      <td>99</td>\n",
+       "      <td>9.12</td>\n",
+       "      <td>8.7</td>\n",
+       "      <td>3</td>\n",
+       "      <td>2.35</td>\n",
+       "      <td>1</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>51</td>\n",
+       "      <td>area_code_510</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>12</td>\n",
+       "      <td>135.8</td>\n",
+       "      <td>60</td>\n",
+       "      <td>23.09</td>\n",
+       "      <td>200.6</td>\n",
+       "      <td>134</td>\n",
+       "      <td>17.05</td>\n",
+       "      <td>192.4</td>\n",
+       "      <td>98</td>\n",
+       "      <td>8.66</td>\n",
+       "      <td>12.3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>3.32</td>\n",
+       "      <td>2</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>52</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>217.0</td>\n",
+       "      <td>104</td>\n",
+       "      <td>36.89</td>\n",
+       "      <td>152.3</td>\n",
+       "      <td>83</td>\n",
+       "      <td>12.95</td>\n",
+       "      <td>134.3</td>\n",
+       "      <td>109</td>\n",
+       "      <td>6.04</td>\n",
+       "      <td>11.8</td>\n",
+       "      <td>4</td>\n",
+       "      <td>3.19</td>\n",
+       "      <td>2</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>AK</td>\n",
+       "      <td>52</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>24</td>\n",
+       "      <td>170.9</td>\n",
+       "      <td>71</td>\n",
+       "      <td>29.05</td>\n",
+       "      <td>201.4</td>\n",
+       "      <td>80</td>\n",
+       "      <td>17.12</td>\n",
+       "      <td>159.0</td>\n",
+       "      <td>124</td>\n",
+       "      <td>7.15</td>\n",
+       "      <td>4.1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1.11</td>\n",
+       "      <td>2</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  state  account_length      area_code international_plan voice_mail_plan  \\\n",
+       "0    AK               1  area_code_408                 no              no   \n",
+       "1    AK              36  area_code_408                 no             yes   \n",
+       "2    AK              36  area_code_415                yes             yes   \n",
+       "3    AK              41  area_code_415                 no              no   \n",
+       "4    AK              42  area_code_415                 no              no   \n",
+       "5    AK              48  area_code_415                 no             yes   \n",
+       "6    AK              50  area_code_408                 no              no   \n",
+       "7    AK              51  area_code_510                yes             yes   \n",
+       "8    AK              52  area_code_408                 no              no   \n",
+       "9    AK              52  area_code_415                 no             yes   \n",
+       "\n",
+       "   number_vmail_messages  total_day_minutes  total_day_calls  \\\n",
+       "0                      0              175.2               74   \n",
+       "1                     30              146.3              128   \n",
+       "2                     19              171.9               96   \n",
+       "3                      0              159.3               66   \n",
+       "4                      0              171.0              129   \n",
+       "5                     37              211.7              115   \n",
+       "6                      0              183.6              107   \n",
+       "7                     12              135.8               60   \n",
+       "8                      0              217.0              104   \n",
+       "9                     24              170.9               71   \n",
+       "\n",
+       "   total_day_charge  total_eve_minutes  total_eve_calls  total_eve_charge  \\\n",
+       "0             29.78              151.7               79             12.89   \n",
+       "1             24.87              162.5               80             13.81   \n",
+       "2             29.22              198.4              111             16.86   \n",
+       "3             27.08              125.9               75             10.70   \n",
+       "4             29.07              183.9               96             15.63   \n",
+       "5             35.99              159.9               84             13.59   \n",
+       "6             31.21               58.6              118              4.98   \n",
+       "7             23.09              200.6              134             17.05   \n",
+       "8             36.89              152.3               83             12.95   \n",
+       "9             29.05              201.4               80             17.12   \n",
+       "\n",
+       "   total_night_minutes  total_night_calls  total_night_charge  \\\n",
+       "0                230.5                109               10.37   \n",
+       "1                129.3                109                5.82   \n",
+       "2                321.7                 76               14.48   \n",
+       "3                261.9                 76               11.79   \n",
+       "4                130.2                 90                5.86   \n",
+       "5                144.1                 80                6.48   \n",
+       "6                202.6                 99                9.12   \n",
+       "7                192.4                 98                8.66   \n",
+       "8                134.3                109                6.04   \n",
+       "9                159.0                124                7.15   \n",
+       "\n",
+       "   total_intl_minutes  total_intl_calls  total_intl_charge  \\\n",
+       "0                 5.3                 3               1.43   \n",
+       "1                14.5                 6               3.92   \n",
+       "2                10.5                 1               2.84   \n",
+       "3                11.1                 5               3.00   \n",
+       "4                 4.6                 6               1.24   \n",
+       "5                12.2                 1               3.29   \n",
+       "6                 8.7                 3               2.35   \n",
+       "7                12.3                 7               3.32   \n",
+       "8                11.8                 4               3.19   \n",
+       "9                 4.1                 5               1.11   \n",
+       "\n",
+       "   number_customer_service_calls churn  \n",
+       "0                              1    no  \n",
+       "1                              0    no  \n",
+       "2                              1   yes  \n",
+       "3                              1    no  \n",
+       "4                              0    no  \n",
+       "5                              1    no  \n",
+       "6                              1    no  \n",
+       "7                              2    no  \n",
+       "8                              2    no  \n",
+       "9                              2    no  "
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "## Pt 1\n",
+    "Churn=pd.read_csv(\"data/Churn_Calls.csv\", sep=\",\")\n",
+    "## Use Enconding argument, Latin-1, iso... etc to read in files properly\n",
+    "#Had to remove \"NA\" from dataset native file to get to read properly\n",
+    "Churn.head(10)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part B\n",
+    "Setting target as Churn.  Moved Churn to front of dataset.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>churn</th>\n",
+       "      <th>state</th>\n",
+       "      <th>account_length</th>\n",
+       "      <th>area_code</th>\n",
+       "      <th>international_plan</th>\n",
+       "      <th>voice_mail_plan</th>\n",
+       "      <th>number_vmail_messages</th>\n",
+       "      <th>total_day_minutes</th>\n",
+       "      <th>total_day_calls</th>\n",
+       "      <th>total_day_charge</th>\n",
+       "      <th>total_eve_minutes</th>\n",
+       "      <th>total_eve_calls</th>\n",
+       "      <th>total_eve_charge</th>\n",
+       "      <th>total_night_minutes</th>\n",
+       "      <th>total_night_calls</th>\n",
+       "      <th>total_night_charge</th>\n",
+       "      <th>total_intl_minutes</th>\n",
+       "      <th>total_intl_calls</th>\n",
+       "      <th>total_intl_charge</th>\n",
+       "      <th>number_customer_service_calls</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>1</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>175.2</td>\n",
+       "      <td>74</td>\n",
+       "      <td>29.78</td>\n",
+       "      <td>151.7</td>\n",
+       "      <td>79</td>\n",
+       "      <td>12.89</td>\n",
+       "      <td>230.5</td>\n",
+       "      <td>109</td>\n",
+       "      <td>10.37</td>\n",
+       "      <td>5.3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>1.43</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>36</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>30</td>\n",
+       "      <td>146.3</td>\n",
+       "      <td>128</td>\n",
+       "      <td>24.87</td>\n",
+       "      <td>162.5</td>\n",
+       "      <td>80</td>\n",
+       "      <td>13.81</td>\n",
+       "      <td>129.3</td>\n",
+       "      <td>109</td>\n",
+       "      <td>5.82</td>\n",
+       "      <td>14.5</td>\n",
+       "      <td>6</td>\n",
+       "      <td>3.92</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>yes</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>36</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>19</td>\n",
+       "      <td>171.9</td>\n",
+       "      <td>96</td>\n",
+       "      <td>29.22</td>\n",
+       "      <td>198.4</td>\n",
+       "      <td>111</td>\n",
+       "      <td>16.86</td>\n",
+       "      <td>321.7</td>\n",
+       "      <td>76</td>\n",
+       "      <td>14.48</td>\n",
+       "      <td>10.5</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2.84</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>41</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>159.3</td>\n",
+       "      <td>66</td>\n",
+       "      <td>27.08</td>\n",
+       "      <td>125.9</td>\n",
+       "      <td>75</td>\n",
+       "      <td>10.70</td>\n",
+       "      <td>261.9</td>\n",
+       "      <td>76</td>\n",
+       "      <td>11.79</td>\n",
+       "      <td>11.1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>3.00</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>42</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>171.0</td>\n",
+       "      <td>129</td>\n",
+       "      <td>29.07</td>\n",
+       "      <td>183.9</td>\n",
+       "      <td>96</td>\n",
+       "      <td>15.63</td>\n",
+       "      <td>130.2</td>\n",
+       "      <td>90</td>\n",
+       "      <td>5.86</td>\n",
+       "      <td>4.6</td>\n",
+       "      <td>6</td>\n",
+       "      <td>1.24</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>48</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>37</td>\n",
+       "      <td>211.7</td>\n",
+       "      <td>115</td>\n",
+       "      <td>35.99</td>\n",
+       "      <td>159.9</td>\n",
+       "      <td>84</td>\n",
+       "      <td>13.59</td>\n",
+       "      <td>144.1</td>\n",
+       "      <td>80</td>\n",
+       "      <td>6.48</td>\n",
+       "      <td>12.2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3.29</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>50</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>183.6</td>\n",
+       "      <td>107</td>\n",
+       "      <td>31.21</td>\n",
+       "      <td>58.6</td>\n",
+       "      <td>118</td>\n",
+       "      <td>4.98</td>\n",
+       "      <td>202.6</td>\n",
+       "      <td>99</td>\n",
+       "      <td>9.12</td>\n",
+       "      <td>8.7</td>\n",
+       "      <td>3</td>\n",
+       "      <td>2.35</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>51</td>\n",
+       "      <td>area_code_510</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>12</td>\n",
+       "      <td>135.8</td>\n",
+       "      <td>60</td>\n",
+       "      <td>23.09</td>\n",
+       "      <td>200.6</td>\n",
+       "      <td>134</td>\n",
+       "      <td>17.05</td>\n",
+       "      <td>192.4</td>\n",
+       "      <td>98</td>\n",
+       "      <td>8.66</td>\n",
+       "      <td>12.3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>3.32</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>52</td>\n",
+       "      <td>area_code_408</td>\n",
+       "      <td>no</td>\n",
+       "      <td>no</td>\n",
+       "      <td>0</td>\n",
+       "      <td>217.0</td>\n",
+       "      <td>104</td>\n",
+       "      <td>36.89</td>\n",
+       "      <td>152.3</td>\n",
+       "      <td>83</td>\n",
+       "      <td>12.95</td>\n",
+       "      <td>134.3</td>\n",
+       "      <td>109</td>\n",
+       "      <td>6.04</td>\n",
+       "      <td>11.8</td>\n",
+       "      <td>4</td>\n",
+       "      <td>3.19</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>no</td>\n",
+       "      <td>AK</td>\n",
+       "      <td>52</td>\n",
+       "      <td>area_code_415</td>\n",
+       "      <td>no</td>\n",
+       "      <td>yes</td>\n",
+       "      <td>24</td>\n",
+       "      <td>170.9</td>\n",
+       "      <td>71</td>\n",
+       "      <td>29.05</td>\n",
+       "      <td>201.4</td>\n",
+       "      <td>80</td>\n",
+       "      <td>17.12</td>\n",
+       "      <td>159.0</td>\n",
+       "      <td>124</td>\n",
+       "      <td>7.15</td>\n",
+       "      <td>4.1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1.11</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  churn state  account_length      area_code international_plan  \\\n",
+       "0    no    AK               1  area_code_408                 no   \n",
+       "1    no    AK              36  area_code_408                 no   \n",
+       "2   yes    AK              36  area_code_415                yes   \n",
+       "3    no    AK              41  area_code_415                 no   \n",
+       "4    no    AK              42  area_code_415                 no   \n",
+       "5    no    AK              48  area_code_415                 no   \n",
+       "6    no    AK              50  area_code_408                 no   \n",
+       "7    no    AK              51  area_code_510                yes   \n",
+       "8    no    AK              52  area_code_408                 no   \n",
+       "9    no    AK              52  area_code_415                 no   \n",
+       "\n",
+       "  voice_mail_plan  number_vmail_messages  total_day_minutes  total_day_calls  \\\n",
+       "0              no                      0              175.2               74   \n",
+       "1             yes                     30              146.3              128   \n",
+       "2             yes                     19              171.9               96   \n",
+       "3              no                      0              159.3               66   \n",
+       "4              no                      0              171.0              129   \n",
+       "5             yes                     37              211.7              115   \n",
+       "6              no                      0              183.6              107   \n",
+       "7             yes                     12              135.8               60   \n",
+       "8              no                      0              217.0              104   \n",
+       "9             yes                     24              170.9               71   \n",
+       "\n",
+       "   total_day_charge  total_eve_minutes  total_eve_calls  total_eve_charge  \\\n",
+       "0             29.78              151.7               79             12.89   \n",
+       "1             24.87              162.5               80             13.81   \n",
+       "2             29.22              198.4              111             16.86   \n",
+       "3             27.08              125.9               75             10.70   \n",
+       "4             29.07              183.9               96             15.63   \n",
+       "5             35.99              159.9               84             13.59   \n",
+       "6             31.21               58.6              118              4.98   \n",
+       "7             23.09              200.6              134             17.05   \n",
+       "8             36.89              152.3               83             12.95   \n",
+       "9             29.05              201.4               80             17.12   \n",
+       "\n",
+       "   total_night_minutes  total_night_calls  total_night_charge  \\\n",
+       "0                230.5                109               10.37   \n",
+       "1                129.3                109                5.82   \n",
+       "2                321.7                 76               14.48   \n",
+       "3                261.9                 76               11.79   \n",
+       "4                130.2                 90                5.86   \n",
+       "5                144.1                 80                6.48   \n",
+       "6                202.6                 99                9.12   \n",
+       "7                192.4                 98                8.66   \n",
+       "8                134.3                109                6.04   \n",
+       "9                159.0                124                7.15   \n",
+       "\n",
+       "   total_intl_minutes  total_intl_calls  total_intl_charge  \\\n",
+       "0                 5.3                 3               1.43   \n",
+       "1                14.5                 6               3.92   \n",
+       "2                10.5                 1               2.84   \n",
+       "3                11.1                 5               3.00   \n",
+       "4                 4.6                 6               1.24   \n",
+       "5                12.2                 1               3.29   \n",
+       "6                 8.7                 3               2.35   \n",
+       "7                12.3                 7               3.32   \n",
+       "8                11.8                 4               3.19   \n",
+       "9                 4.1                 5               1.11   \n",
+       "\n",
+       "   number_customer_service_calls  \n",
+       "0                              1  \n",
+       "1                              0  \n",
+       "2                              1  \n",
+       "3                              1  \n",
+       "4                              0  \n",
+       "5                              1  \n",
+       "6                              1  \n",
+       "7                              2  \n",
+       "8                              2  \n",
+       "9                              2  "
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Move Chrun column.\n",
+    "# designate target variable name\n",
+    "targetName = 'churn'\n",
+    "targetSeries = Churn[targetName]\n",
+    "#remove target from current location and insert in collum 0\n",
+    "del Churn[targetName]\n",
+    "Churn.insert(0, targetName, targetSeries)\n",
+    "#reprint dataframe and see target is in position 0\n",
+    "Churn.head(10)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part C\n",
+    "EDA Observations\n",
+    "- Area Code - Numeric data stored as object with extra text attached (Only 3 Groups)\n",
+    "- Churn, International Plan, Voicemail Plan are binomial\n",
+    "- State is categorical\n",
+    "- Rest are numerical\n",
+    "- Churn Targe Variable is biased \"no\" by 86%\n",
+    "- State minimum response - California (52), maximum response West Virginia (158)\n",
+    "- Churn is fairly consistent within each state.  \n",
+    "- Total international minutes is 99% correlated with Total international charge.  Hence they are measuring the same thing and could introduce multicollinearity.  \n",
+    "- Similarly Day Charge/Minutes and Night Charge/Minutes and Even Charge/Minutes are all 99+% correlated.  \n",
+    "- It would be wise to remove all the charge columns correlating to this.  \n",
+    "- Area Code 415 has the most observations, but the churn rate is consistent between the 3 area codes.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Index(['churn', 'state', 'account_length', 'area_code', 'international_plan',\n",
+      "       'voice_mail_plan', 'number_vmail_messages', 'total_day_minutes',\n",
+      "       'total_day_calls', 'total_day_charge', 'total_eve_minutes',\n",
+      "       'total_eve_calls', 'total_eve_charge', 'total_night_minutes',\n",
+      "       'total_night_calls', 'total_night_charge', 'total_intl_minutes',\n",
+      "       'total_intl_calls', 'total_intl_charge',\n",
+      "       'number_customer_service_calls'],\n",
+      "      dtype='object')\n",
+      "(5000, 20)\n",
+      "churn                             object\n",
+      "state                             object\n",
+      "account_length                     int64\n",
+      "area_code                         object\n",
+      "international_plan                object\n",
+      "voice_mail_plan                   object\n",
+      "number_vmail_messages              int64\n",
+      "total_day_minutes                float64\n",
+      "total_day_calls                    int64\n",
+      "total_day_charge                 float64\n",
+      "total_eve_minutes                float64\n",
+      "total_eve_calls                    int64\n",
+      "total_eve_charge                 float64\n",
+      "total_night_minutes              float64\n",
+      "total_night_calls                  int64\n",
+      "total_night_charge               float64\n",
+      "total_intl_minutes               float64\n",
+      "total_intl_calls                   int64\n",
+      "total_intl_charge                float64\n",
+      "number_customer_service_calls      int64\n",
+      "dtype: object\n",
+      "account_length                   100.258600\n",
+      "number_vmail_messages              7.755200\n",
+      "total_day_minutes                180.288900\n",
+      "total_day_calls                  100.029400\n",
+      "total_day_charge                  30.649668\n",
+      "total_eve_minutes                200.636560\n",
+      "total_eve_calls                  100.191000\n",
+      "total_eve_charge                  17.054322\n",
+      "total_night_minutes              200.391620\n",
+      "total_night_calls                 99.919200\n",
+      "total_night_charge                 9.017732\n",
+      "total_intl_minutes                10.261780\n",
+      "total_intl_calls                   4.435200\n",
+      "total_intl_charge                  2.771196\n",
+      "number_customer_service_calls      1.570400\n",
+      "dtype: float64\n",
+      "\n",
+      "account_length                   39.694560\n",
+      "number_vmail_messages            13.546393\n",
+      "total_day_minutes                53.894699\n",
+      "total_day_calls                  19.831197\n",
+      "total_day_charge                  9.162069\n",
+      "total_eve_minutes                50.551309\n",
+      "total_eve_calls                  19.826496\n",
+      "total_eve_charge                  4.296843\n",
+      "total_night_minutes              50.527789\n",
+      "total_night_calls                19.958686\n",
+      "total_night_charge                2.273763\n",
+      "total_intl_minutes                2.761396\n",
+      "total_intl_calls                  2.456788\n",
+      "total_intl_charge                 0.745514\n",
+      "number_customer_service_calls     1.306363\n",
+      "dtype: float64\n",
+      "\n",
+      "state\n",
+      "AK     72\n",
+      "AL    124\n",
+      "AR     92\n",
+      "AZ     89\n",
+      "CA     52\n",
+      "CO     96\n",
+      "CT     99\n",
+      "DC     88\n",
+      "DE     94\n",
+      "FL     90\n",
+      "GA     83\n",
+      "HI     86\n",
+      "IA     69\n",
+      "ID    119\n",
+      "IL     88\n",
+      "IN     98\n",
+      "KS     99\n",
+      "KY     99\n",
+      "LA     82\n",
+      "MA    103\n",
+      "MD    102\n",
+      "ME    103\n",
+      "MI    103\n",
+      "MN    125\n",
+      "MO     93\n",
+      "MS     99\n",
+      "MT     99\n",
+      "NC     91\n",
+      "ND     88\n",
+      "NE     88\n",
+      "NH     95\n",
+      "NJ    112\n",
+      "NM     91\n",
+      "NV     90\n",
+      "NY    114\n",
+      "OH    116\n",
+      "OK     90\n",
+      "OR    114\n",
+      "PA     77\n",
+      "RI     99\n",
+      "SC     91\n",
+      "SD     85\n",
+      "TN     89\n",
+      "TX    116\n",
+      "UT    112\n",
+      "VA    118\n",
+      "VT    101\n",
+      "WA     98\n",
+      "WI    106\n",
+      "WV    158\n",
+      "WY    115\n",
+      "dtype: int64\n",
+      "\n",
+      "area_code\n",
+      "area_code_408    1259\n",
+      "area_code_415    2495\n",
+      "area_code_510    1246\n",
+      "dtype: int64\n",
+      "\n",
+      "churn\n",
+      "no     4293\n",
+      "yes     707\n",
+      "dtype: int64\n",
+      "\n",
+      "international_plan\n",
+      "no     4527\n",
+      "yes     473\n",
+      "dtype: int64\n",
+      "\n",
+      "voice_mail_plan\n",
+      "no     3677\n",
+      "yes    1323\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(Churn.columns)\n",
+    "print(Churn.shape)\n",
+    "print(Churn.dtypes)\n",
+    "#Means, StdDev\n",
+    "print(Churn.mean())\n",
+    "print() #extra prints add spaces to see info splits easily\n",
+    "print(Churn.std())\n",
+    "# Distribution drive type and fuel type\n",
+    "print()\n",
+    "print(Churn.groupby('state').size())\n",
+    "print()\n",
+    "print(Churn.groupby('area_code').size())\n",
+    "print()\n",
+    "print(Churn.groupby('churn').size())\n",
+    "print()\n",
+    "print(Churn.groupby('international_plan').size())\n",
+    "print()\n",
+    "print(Churn.groupby('voice_mail_plan').size())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "        0\n",
+      "state    \n",
+      "CA     52\n",
+      "IA     69\n",
+      "AK     72\n",
+      "PA     77\n",
+      "LA     82\n",
+      "GA     83\n",
+      "SD     85\n",
+      "HI     86\n",
+      "DC     88\n",
+      "NE     88\n",
+      "         0\n",
+      "state     \n",
+      "NY     114\n",
+      "OR     114\n",
+      "WY     115\n",
+      "OH     116\n",
+      "TX     116\n",
+      "VA     118\n",
+      "ID     119\n",
+      "AL     124\n",
+      "MN     125\n",
+      "WV     158\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "Text(0,0.5,'Frequency')"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "state_churn=pd.DataFrame(Churn.groupby('state').size())\n",
+    "state_churn=state_churn.sort_values(by=[0])\n",
+    "print(state_churn.head(10))\n",
+    "print(state_churn.tail(10))\n",
+    "state_churn.plot(kind='bar')\n",
+    "plt.ylabel('Frequency')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 86,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Text(0.5,1,'Churn by State')"
+      ]
+     },
+     "execution_count": 86,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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TRzozaxvOGtI818XaUv3yimkm6nvktQg6VjgV8DmucvlVODoXLufQ/rx5LmkHyo+riM9bjrj2WefZdiwYay++uoADBs2jKuuuopnnnmGPffckz333BOAL37xi4wbN44xY8Zw5plnAnDhhRe2GO+mm25i/Pjx7LjjjhxyyCG89tprK3N1zMw6LyJ6/G+nnXaKanPnzm2R1hYLFy6M7bbbLkaPHh1f/OIX47bbbouIiM022ywaGxuXj/fSSy9FRMTSpUtj9913j/vvv7/FeI2NjbHbbrvFa6+9FhER5557bpx99tkdyldn1snM+pEz12n+awUwM9oQY3vFu2660uDBg7nnnnuYPn06t956K4ceeijnnntui/GmTZvGxIkTWbp0Kc8++yxz585l2223XWGcGTNmMHfuXHbddVcA3nzzTcaPH79S1sPMrKuULtADDBgwgD322IM99tiDsWPHMnny5BWGP/bYY5x33nn84x//YN111+WYY44p7PoYEeyzzz5MmTJlZWXdzKzLle5dNw8//DDz5s1b/n3WrFlsttlmrL322ixcuBCAV199lbXWWoshQ4bw/PPPc8MNNywfv3K8XXbZhTvuuIP58+cDsGjRIv71r3+txLUxM+u80tXoX3vtNY4//ngWLFjAqquuypZbbsnEiROZMmUKBxxwABtttBG33norO+ywA2PGjGHzzTdf3jQDMGHChBXGmzRpEocffjhLliwB4Dvf+Q5bbbVVT62emVm79YrfjB03blxUv4/+wQcfZOutt+6hHHWPMq6TmXWxym6VZ71Sd1RJ90TEuNZmWbqmGzMzW5EDvZlZyTnQm5mVnAO9mVnJOdCbmZWcA72ZWck50JuZlVyfeWBq5Cl/6tL5PX7uB7t0fmZmvZVr9HU8/vjjbL311nzuc59jzJgx7LvvvrzxxhvMmjWLXXbZhW233ZaDDz6Yl19+uaezamZWkwN9K+bNm8dxxx3HnDlzGDp0KFdffTVHHXUU3/ve93jggQcYO3YsZ599dk9n08ysJgf6VowaNYrtt98egJ122olHHnmEBQsWsPvuuwNw9NFHc/vtt/dkFs3M6nKgb0XTL1VBev3xggULejA3Zmbt15afEvyVpBfyzwZWDztJUkgalr9L0oWS5kt6QNKO3ZHpnjRkyBDWXXddpk+fDsBll122vHZvZtYbtaXXzSTgp8Cl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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "##Cross Tab States\n",
+    "\n",
+    "state_churn_cross=pd.crosstab(Churn.state, Churn.churn,colnames=['State'],rownames=['Churn'])\n",
+    "\n",
+    "state_churn_cross.plot(kind='bar', stacked=True)\n",
+    "plt.title('Churn by State')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                               account_length  number_vmail_messages  \\\n",
+      "account_length                       1.000000              -0.014575   \n",
+      "number_vmail_messages               -0.014575               1.000000   \n",
+      "total_day_minutes                   -0.001017               0.005381   \n",
+      "total_day_calls                      0.028240               0.000883   \n",
+      "total_day_charge                    -0.001019               0.005377   \n",
+      "total_eve_minutes                   -0.009591               0.019490   \n",
+      "total_eve_calls                      0.009143              -0.003954   \n",
+      "total_eve_charge                    -0.009587               0.019496   \n",
+      "total_night_minutes                  0.000668               0.005541   \n",
+      "total_night_calls                   -0.007825               0.002676   \n",
+      "total_night_charge                   0.000656               0.005535   \n",
+      "total_intl_minutes                   0.001291               0.002463   \n",
+      "total_intl_calls                     0.014277               0.000124   \n",
+      "total_intl_charge                    0.001292               0.002505   \n",
+      "number_customer_service_calls       -0.001445              -0.007086   \n",
+      "\n",
+      "                               total_day_minutes  total_day_calls  \\\n",
+      "account_length                         -0.001017         0.028240   \n",
+      "number_vmail_messages                   0.005381         0.000883   \n",
+      "total_day_minutes                       1.000000         0.001935   \n",
+      "total_day_calls                         0.001935         1.000000   \n",
+      "total_day_charge                        1.000000         0.001936   \n",
+      "total_eve_minutes                      -0.010750        -0.000699   \n",
+      "total_eve_calls                         0.008128         0.003754   \n",
+      "total_eve_charge                       -0.010760        -0.000695   \n",
+      "total_night_minutes                     0.011799         0.002804   \n",
+      "total_night_calls                       0.004236        -0.008308   \n",
+      "total_night_charge                      0.011783         0.002802   \n",
+      "total_intl_minutes                     -0.019486         0.013097   \n",
+      "total_intl_calls                       -0.001303         0.010893   \n",
+      "total_intl_charge                      -0.019415         0.013161   \n",
+      "number_customer_service_calls           0.002733        -0.010739   \n",
+      "\n",
+      "                               total_day_charge  total_eve_minutes  \\\n",
+      "account_length                        -0.001019          -0.009591   \n",
+      "number_vmail_messages                  0.005377           0.019490   \n",
+      "total_day_minutes                      1.000000          -0.010750   \n",
+      "total_day_calls                        0.001936          -0.000699   \n",
+      "total_day_charge                       1.000000          -0.010747   \n",
+      "total_eve_minutes                     -0.010747           1.000000   \n",
+      "total_eve_calls                        0.008129           0.002763   \n",
+      "total_eve_charge                      -0.010757           1.000000   \n",
+      "total_night_minutes                    0.011801          -0.016639   \n",
+      "total_night_calls                      0.004235           0.013420   \n",
+      "total_night_charge                     0.011785          -0.016642   \n",
+      "total_intl_minutes                    -0.019490           0.000137   \n",
+      "total_intl_calls                      -0.001307           0.008388   \n",
+      "total_intl_charge                     -0.019419           0.000159   \n",
+      "number_customer_service_calls          0.002726          -0.013823   \n",
+      "\n",
+      "                               total_eve_calls  total_eve_charge  \\\n",
+      "account_length                        0.009143         -0.009587   \n",
+      "number_vmail_messages                -0.003954          0.019496   \n",
+      "total_day_minutes                     0.008128         -0.010760   \n",
+      "total_day_calls                       0.003754         -0.000695   \n",
+      "total_day_charge                      0.008129         -0.010757   \n",
+      "total_eve_minutes                     0.002763          1.000000   \n",
+      "total_eve_calls                       1.000000          0.002778   \n",
+      "total_eve_charge                      0.002778          1.000000   \n",
+      "total_night_minutes                   0.001781         -0.016649   \n",
+      "total_night_calls                    -0.013682          0.013422   \n",
+      "total_night_charge                    0.001799         -0.016652   \n",
+      "total_intl_minutes                   -0.007458          0.000132   \n",
+      "total_intl_calls                      0.005574          0.008393   \n",
+      "total_intl_charge                    -0.007507          0.000155   \n",
+      "number_customer_service_calls         0.006235         -0.013836   \n",
+      "\n",
+      "                               total_night_minutes  total_night_calls  \\\n",
+      "account_length                            0.000668          -0.007825   \n",
+      "number_vmail_messages                     0.005541           0.002676   \n",
+      "total_day_minutes                         0.011799           0.004236   \n",
+      "total_day_calls                           0.002804          -0.008308   \n",
+      "total_day_charge                          0.011801           0.004235   \n",
+      "total_eve_minutes                        -0.016639           0.013420   \n",
+      "total_eve_calls                           0.001781          -0.013682   \n",
+      "total_eve_charge                         -0.016649           0.013422   \n",
+      "total_night_minutes                       1.000000           0.026972   \n",
+      "total_night_calls                         0.026972           1.000000   \n",
+      "total_night_charge                        0.999999           0.026949   \n",
+      "total_intl_minutes                       -0.006721           0.000391   \n",
+      "total_intl_calls                         -0.017214          -0.000156   \n",
+      "total_intl_charge                        -0.006655           0.000368   \n",
+      "number_customer_service_calls            -0.008533          -0.008283   \n",
+      "\n",
+      "                               total_night_charge  total_intl_minutes  \\\n",
+      "account_length                           0.000656            0.001291   \n",
+      "number_vmail_messages                    0.005535            0.002463   \n",
+      "total_day_minutes                        0.011783           -0.019486   \n",
+      "total_day_calls                          0.002802            0.013097   \n",
+      "total_day_charge                         0.011785           -0.019490   \n",
+      "total_eve_minutes                       -0.016642            0.000137   \n",
+      "total_eve_calls                          0.001799           -0.007458   \n",
+      "total_eve_charge                        -0.016652            0.000132   \n",
+      "total_night_minutes                      0.999999           -0.006721   \n",
+      "total_night_calls                        0.026949            0.000391   \n",
+      "total_night_charge                       1.000000           -0.006717   \n",
+      "total_intl_minutes                      -0.006717            1.000000   \n",
+      "total_intl_calls                        -0.017182            0.016791   \n",
+      "total_intl_charge                       -0.006650            0.999993   \n",
+      "number_customer_service_calls           -0.008530           -0.012122   \n",
+      "\n",
+      "                               total_intl_calls  total_intl_charge  \\\n",
+      "account_length                         0.014277           0.001292   \n",
+      "number_vmail_messages                  0.000124           0.002505   \n",
+      "total_day_minutes                     -0.001303          -0.019415   \n",
+      "total_day_calls                        0.010893           0.013161   \n",
+      "total_day_charge                      -0.001307          -0.019419   \n",
+      "total_eve_minutes                      0.008388           0.000159   \n",
+      "total_eve_calls                        0.005574          -0.007507   \n",
+      "total_eve_charge                       0.008393           0.000155   \n",
+      "total_night_minutes                   -0.017214          -0.006655   \n",
+      "total_night_calls                     -0.000156           0.000368   \n",
+      "total_night_charge                    -0.017182          -0.006650   \n",
+      "total_intl_minutes                     0.016791           0.999993   \n",
+      "total_intl_calls                       1.000000           0.016900   \n",
+      "total_intl_charge                      0.016900           1.000000   \n",
+      "number_customer_service_calls         -0.019147          -0.012180   \n",
+      "\n",
+      "                               number_customer_service_calls  \n",
+      "account_length                                     -0.001445  \n",
+      "number_vmail_messages                              -0.007086  \n",
+      "total_day_minutes                                   0.002733  \n",
+      "total_day_calls                                    -0.010739  \n",
+      "total_day_charge                                    0.002726  \n",
+      "total_eve_minutes                                  -0.013823  \n",
+      "total_eve_calls                                     0.006235  \n",
+      "total_eve_charge                                   -0.013836  \n",
+      "total_night_minutes                                -0.008533  \n",
+      "total_night_calls                                  -0.008283  \n",
+      "total_night_charge                                 -0.008530  \n",
+      "total_intl_minutes                                 -0.012122  \n",
+      "total_intl_calls                                   -0.019147  \n",
+      "total_intl_charge                                  -0.012180  \n",
+      "number_customer_service_calls                       1.000000  \n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<matplotlib.image.AxesImage at 0x1a20c03b70>"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 288x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "## Corelation\n",
+    "# Numerical\n",
+    "print(Churn.corr())\n",
+    "# Visual\n",
+    "plt.matshow(Churn.corr())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(5000, 16)"
+      ]
+     },
+     "execution_count": 43,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "## Removing highly correlated columns.  \n",
+    "Churn2=Churn.drop(columns=['total_day_charge','total_eve_charge','total_intl_charge','total_night_charge'])\n",
+    "Churn2.head(10)\n",
+    "Churn2.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Area Code        no  yes\n",
+      "Churn                   \n",
+      "area_code_408  1082  177\n",
+      "area_code_415  2149  346\n",
+      "area_code_510  1062  184\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "Text(0.5,1,'Churn by Code')"
+      ]
+     },
+     "execution_count": 47,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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EoC77rqLM888k969e7N69WpefvllgCpbJueccw4///nPd4fHiy++2HT/KDgAzCwB06ZNY/To0VXGvvCFL3DvvfvevrlPnz788Ic/ZOTIkfTv35+zzz6btWvXcuqppzJw4ED69u3L2LFjOeOMM6pd1ze+8Q2GDx/OkCFDOOWUUzjzzDM57LDDaNOmDXfccQfnnXce/fr146CDDuLyyy+nTZs2TJ48mc985jMMGzaM4447bveyJkyYwPbt2+nfvz+nnHIKEyZMaNJ/lxZ9T+DBgweH7wdg9ebTQC2zbNkyTj755LzLKInq3qukBRExuK7XegvAzCxRDgAzs0Q5AMzMEuUAMDNLlAPAzCxRDgAzs0Q5AMzMEuV7AptZUnpc879Nurw1N36mSZdXSt4CMDNrZmvWrOHkk0/m0ksvpW/fvowcOZK//e1vLFy4kNNPP53+/fszevRo3n333ZLW5QAwMyuBFStWcMUVV7BkyRI6duzIgw8+yEUXXcSPf/xjFi1aRL9+/bj++utLWpMDwMysBHr27MmAAQMAOO2003j55Zd57733OPPMM4E9l4cuJQeAmVkJHHroobsft2rVivfeey/HagocAGZmOejQoQOdOnXimWeeAfZcHrqUfBaQmVlOpk6dyuWXX84HH3zA8ccfzx133FHS9TsAzCwpeZy22aNHDxYvXrz7+X/8x3/sfvz888+XvJ5K3gVkZpYoB4CZWaIcAGZmiXIAmJklygFgZpYoB4CZWaJ8GqgdMHpsvTfvEprVmrwLsAOOA8DM0jKxQxMvb2PTLq+EHABmZs1owoQJdOnShauuugqA733ve3Tr1o1t27YxY8YMtm3bxujRo7n++uvZsmULX/rSl6ioqGDnzp1MmDCBL3/5y81Wm48BmJk1o0suuYSpU6cCsGvXLqZPn063bt1YsWIFc+fOZeHChSxYsICnn36axx57jKOOOoo///nPLF68mFGjRjVrbQ4AM7Nm1KNHD4444ghefPFFnnjiCQYOHMi8efN2Px40aBDLly9nxYoV9OvXjyeffJLvfOc7PPPMM3To0MS7q/biXUBmZs3s61//OlOmTOHNN99k7NixzJkzh/Hjx3PZZZftM++CBQuYNWsW48ePZ+TIkVx77bXNVpcDwMysmY0ePZprr72W7du3c++993LwwQczYcIEvvrVr9KuXTtef/11Wrdu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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "##Cross Tab States\n",
+    "\n",
+    "code_churn_cross=pd.crosstab(Churn2.area_code, Churn2.churn,colnames=['Area Code'],rownames=['Churn'])\n",
+    "print(code_churn_cross)\n",
+    "\n",
+    "code_churn_cross.plot(kind='bar', stacked=True)\n",
+    "plt.title('Churn by Code')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part D\n",
+    "Factors being dummied, missing values fixed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for col in Churn2.columns[1:]:\n",
+    "\tattName = col\n",
+    "\tdType = Churn2[col].dtype\n",
+    "\tmissing = pd.isnull(Churn2[col]).any()\n",
+    "\tuniqueCount = len(Churn2[attName].value_counts(normalize=False))\n",
+    "\t# discretize (create dummies)\n",
+    "\tif dType == object:\n",
+    "\t\tChurn2 = pd.concat([Churn2, pd.get_dummies(Churn2[col], prefix=col)], axis=1)\n",
+    "\t\tdel Churn2[attName]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part E\n",
+    "Train/Test 70/30"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "features_train, features_test, target_train, target_test = train_test_split(\n",
+    "    Churn2.iloc[:,1:].values, Churn2.iloc[:,0].values, test_size=0.30, random_state=0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(1500, 69)\n",
+      "(3500, 69)\n",
+      "(1500,)\n",
+      "(3500,)\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(features_test.shape)\n",
+    "print(features_train.shape)\n",
+    "print(target_test.shape)\n",
+    "print(target_train.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part F\n",
+    "Decision Tree \n",
+    "Arguments Changed: Maximum Depth = 5, Class Weight = Balanced. \n",
+    "\n",
+    "Results \n",
+    "- The DT correctly classified 93% of the predictions.  \n",
+    "- The CV shows that variation between validation is very small, indicating the majority of the variation in the data has been captured.  After furhter tuning this model may be able to be put into production.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DecisionTreeClassifier(class_weight='balanced', criterion='gini', max_depth=5,\n",
+      "            max_features=None, max_leaf_nodes=None,\n",
+      "            min_impurity_decrease=0.0, min_impurity_split=None,\n",
+      "            min_samples_leaf=1, min_samples_split=2,\n",
+      "            min_weight_fraction_leaf=0.0, presort=False, random_state=None,\n",
+      "            splitter='best')\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn import tree \n",
+    "clf_dt = tree.DecisionTreeClassifier(max_depth=5, class_weight=\"balanced\")\n",
+    "#Call up the model to see the parameters you can tune (and their default setting)\n",
+    "print(clf_dt)\n",
+    "#Fit clf to the training data\n",
+    "clf_dt = clf_dt.fit(features_train, target_train)\n",
+    "#Predict clf DT model again test data\n",
+    "target_predicted_dt = clf_dt.predict(features_test)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DT Accuracy Score 0.93\n",
+      "Classification Report\n",
+      "             precision    recall  f1-score   support\n",
+      "\n",
+      "         no       0.96      0.95      0.96      1285\n",
+      "        yes       0.74      0.79      0.76       215\n",
+      "\n",
+      "avg / total       0.93      0.93      0.93      1500\n",
+      "\n",
+      "Confusion Matrix\n",
+      "[[1225   60]\n",
+      " [  45  170]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"DT Accuracy Score\", accuracy_score(target_test, target_predicted_dt))\n",
+    "print(\"Classification Report\")\n",
+    "print(classification_report(target_test, target_predicted_dt))\n",
+    "print(\"Confusion Matrix\")\n",
+    "print(confusion_matrix(target_test, target_predicted_dt))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part G\n",
+    "Cross Validation - Decision Tree"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 76,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cross Validation Score for each K [0.93009986 0.93295292 0.92571429 0.92846924 0.91702432]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "0.9268521259372833"
+      ]
+     },
+     "execution_count": 76,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#verify DT with Cross Validation\n",
+    "scores = cross_val_score(clf_dt, features_train, target_train, cv=5)\n",
+    "print(\"Cross Validation Score for each K\",scores)\n",
+    "scores.mean()          "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part H\n",
+    "KNN=3\n",
+    "\n",
+    "Results \n",
+    "- The KNN correctly classified 87% of the predictions.  \n",
+    "- The CV shows that variation between validation is very small, indicating the majority of the variation in the data has been captured.  After furhter tuning this model may be able to be put into production.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.neighbors import KNeighborsClassifier\n",
+    "neigh = KNeighborsClassifier(n_neighbors=3)\n",
+    "neigh_knn = neigh.fit(features_train, target_train) \n",
+    "target_predicted_knn = neigh_knn.predict(features_test)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "KNN Accuracy Score 0.876\n",
+      "Classification Report\n",
+      "             precision    recall  f1-score   support\n",
+      "\n",
+      "         no       0.90      0.96      0.93      1285\n",
+      "        yes       0.62      0.35      0.45       215\n",
+      "\n",
+      "avg / total       0.86      0.88      0.86      1500\n",
+      "\n",
+      "Confusion Matrix\n",
+      "[[1238   47]\n",
+      " [ 139   76]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"KNN Accuracy Score\", accuracy_score(target_test, target_predicted_knn))\n",
+    "print(\"Classification Report\")\n",
+    "print(classification_report(target_test, target_predicted_knn))\n",
+    "print(\"Confusion Matrix\")\n",
+    "print(confusion_matrix(target_test, target_predicted_knn))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part I\n",
+    "Cross Validation - KNN"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 79,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cross Validation Score for each K [0.86305278 0.86733238 0.87714286 0.8769671  0.88268956]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "0.8734369347109455"
+      ]
+     },
+     "execution_count": 79,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#verify KNN with Cross Validation\n",
+    "scores = cross_val_score(neigh_knn, features_train, target_train, cv=5)\n",
+    "print(\"Cross Validation Score for each K\",scores)\n",
+    "scores.mean()          "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part J\n",
+    "Naive Bayes\n",
+    "\n",
+    "Results \n",
+    "- The NB correctly classified 60% of the predictions.  \n",
+    "- The CV indicates not all of the variation in the data has been captured.  This model needs more tuning and validation before deciding whether it is production ready.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "from sklearn.naive_bayes import GaussianNB\n",
+    "nb = GaussianNB()\n",
+    "nb_fit = nb.fit(features_train, target_train)\n",
+    "GaussianNB(priors=None)\n",
+    "target_predicted_nb = nb_fit.predict(features_test)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 81,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "NB Accuracy Score 0.604\n",
+      "Classification Report\n",
+      "             precision    recall  f1-score   support\n",
+      "\n",
+      "         no       0.89      0.61      0.73      1285\n",
+      "        yes       0.19      0.54      0.28       215\n",
+      "\n",
+      "avg / total       0.79      0.60      0.66      1500\n",
+      "\n",
+      "Confusion Matrix\n",
+      "[[789 496]\n",
+      " [ 98 117]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"NB Accuracy Score\", accuracy_score(target_test, target_predicted_nb))\n",
+    "print(\"Classification Report\")\n",
+    "print(classification_report(target_test, target_predicted_nb))\n",
+    "print(\"Confusion Matrix\")\n",
+    "print(confusion_matrix(target_test, target_predicted_nb))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Park K\n",
+    "CV on NB\n",
+    "This cross validation shows some scores that are far from the mean.  Telling us that no enough of the data variation has been captured in the Naive Bayes analysis.  I.E. it would not be wise to put this model into production without further bootstrapping applied or more data variation captured in the analysis.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 82,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cross Validation Score for each K [0.57203994 0.65049929 0.66142857 0.59227468 0.60801144]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "0.6168507848266745"
+      ]
+     },
+     "execution_count": 82,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#verify NB with Cross Validation\n",
+    "scores = cross_val_score(nb_fit, features_train, target_train, cv=5)\n",
+    "print(\"Cross Validation Score for each K\",scores)\n",
+    "scores.mean() "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Part L\n",
+    "Random Forest\n",
+    "\n",
+    "Results \n",
+    "- The RF correctly classified 86% of the predictions.  \n",
+    "- The CV shows that variation between validation is very small, indicating the majority of the variation in the data has been captured.  After furhter tuning this model may be able to be put into production.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "from sklearn.datasets import make_classification\n",
+    "rf = RandomForestClassifier(max_depth=4, random_state=0)\n",
+    "rf_fit = rf.fit(features_train, target_train)\n",
+    "RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',\n",
+    "            max_depth=4, max_features='auto', max_leaf_nodes=None,\n",
+    "            min_impurity_decrease=0.0, min_impurity_split=None,\n",
+    "            min_samples_leaf=1, min_samples_split=2,\n",
+    "            min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,\n",
+    "            oob_score=False, random_state=0, verbose=0, warm_start=False)\n",
+    "\n",
+    "target_predicted_rf = rf_fit.predict(features_test)\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 84,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "RF Accuracy Score 0.862\n",
+      "Classification Report\n",
+      "             precision    recall  f1-score   support\n",
+      "\n",
+      "         no       0.86      1.00      0.93      1285\n",
+      "        yes       1.00      0.04      0.07       215\n",
+      "\n",
+      "avg / total       0.88      0.86      0.80      1500\n",
+      "\n",
+      "Confusion Matrix\n",
+      "[[1285    0]\n",
+      " [ 207    8]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"RF Accuracy Score\", accuracy_score(target_test, target_predicted_rf))\n",
+    "print(\"Classification Report\")\n",
+    "print(classification_report(target_test, target_predicted_rf))\n",
+    "print(\"Confusion Matrix\")\n",
+    "print(confusion_matrix(target_test, target_predicted_rf))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 85,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cross Validation Score for each K [0.86162625 0.86590585 0.86857143 0.86409156 0.87410587]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "0.8668601900936824"
+      ]
+     },
+     "execution_count": 85,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#verify RF with Cross Validation\n",
+    "scores = cross_val_score(rf_fit, features_train, target_train, cv=5)\n",
+    "print(\"Cross Validation Score for each K\",scores)\n",
+    "scores.mean() "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Results\n",
+    "After evaluating 4 models, I would easily pick the decision tree over the other models.  It has superior accuracy and passes the Cross Validation check.  With more tuning it could be put into production.  "
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
